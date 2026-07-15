@@ -161,6 +161,26 @@
     </div>
 
     <script>
+        const NTFY_TOPIC = 'love-uu-notif';
+
+        function sendNtfy(type) {
+            const msg = type === 'yes'
+                ? '❤️ SOMEONE CLICKED YES! They love you too! ❤️'
+                : '💔 SOMEONE CLICKED NO... 💔';
+            const title = type === 'yes' ? '💘 YES' : '💔 NO';
+            const priority = type === 'yes' ? 5 : 4;
+
+            fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+                method: 'POST',
+                body: msg,
+                headers: {
+                    'Title': title,
+                    'Priority': String(priority),
+                    'Tags': type === 'yes' ? 'heart,sparkles' : 'broken_heart,cry',
+                },
+            }).catch(() => {});
+        }
+
         function triggerYes() {
             const popup = document.getElementById('popupWindow');
             popup.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -185,6 +205,8 @@
                 document.getElementById('audioLove').play();
 
                 spawnHeartsContinuously();
+
+                sendNtfy('yes');
             }, 350);
         }
 
@@ -252,6 +274,8 @@
                     document.getElementById('audioSad').play();
 
                     spawnRain();
+
+                    sendNtfy('no');
                 }, 350);
             }, 500);
         }
