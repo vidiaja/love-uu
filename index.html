@@ -164,21 +164,17 @@
         const NTFY_TOPIC = 'love-uu-notif';
 
         function sendNtfy(type) {
-            const msg = type === 'yes'
-                ? '❤️ SOMEONE CLICKED YES! They love you too! ❤️'
-                : '💔 SOMEONE CLICKED NO... 💔';
-            const title = type === 'yes' ? '💘 YES' : '💔 NO';
-            const priority = type === 'yes' ? 5 : 4;
+            const data = type === 'yes'
+                ? { message: '❤️ Someone clicked YES! They love you too! ❤️', title: '💘 YES', priority: 5, tags: ['heart', 'sparkles'] }
+                : { message: '💔 Someone clicked NO... 💔', title: '💔 NO', priority: 4, tags: ['broken_heart', 'cry'] };
 
             fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
                 method: 'POST',
-                body: msg,
-                headers: {
-                    'Title': title,
-                    'Priority': String(priority),
-                    'Tags': type === 'yes' ? 'heart,sparkles' : 'broken_heart,cry',
-                },
-            }).catch(() => {});
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' },
+            }).catch(() => {
+                navigator.sendBeacon(`https://ntfy.sh/${NTFY_TOPIC}`, data.message);
+            });
         }
 
         function triggerYes() {
